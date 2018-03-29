@@ -89,7 +89,11 @@ namespace IntegracaoPsP.Domain.Entities.Boletim
         [Required]
         [StringLength(10)]
         public string NumeroViagem { get; set; }
-     
+
+        [Required]
+        [StringLength(30)]
+        public string NumeroBoletim { get; set; }
+
         [StringLength(5)]
         public string PortoEmissao { get; set; }
 

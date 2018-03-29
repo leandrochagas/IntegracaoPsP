@@ -4,6 +4,8 @@ using System.Diagnostics;
 
 namespace IntegracaoPsP.Domain.Entities.Boletim
 {
+
+    //TESTE DE VALIDADOR CONDITIONAL
     public class ConteinerItemIDFA
     {
         [Required]
@@ -22,24 +24,24 @@ namespace IntegracaoPsP.Domain.Entities.Boletim
         [StringLength(10)]
         public string NumeroViagem { get; set; }
 
-        //[Required]
-      //  [RequiredIf("FaltaOuAcrescimo", Comparison.IsEqualTo, "F")]
+
         [StringLength(30)]
-        //  [ConditionalAttribute("Index", typeof(RemoteAttribute), Apply = false, ConstructorParam = new object[] { "NameExists", "Home" })]
+        [RequireWhenCategory]
         public string NumeroBoletim { get; set; }
 
-       // [Required]
+        [RequireWhenCategory]
         [StringLength(5)]
         public string Portoemissao { get; set; }
 
-        // [Required]
+        [RequireWhenCategory]
         [StringLength(4)]
         public string Emitente { get; set; }
 
-        // [Required]
+        [RequireWhenCategory]
         [StringLength(8)]
         public string DataEmissao { get; set; }
-        // [Required]
+
+        [RequireWhenCategory]
         [StringLength(5)]
         public string PortoDestinoFinal { get; set; }
 
@@ -51,18 +53,27 @@ namespace IntegracaoPsP.Domain.Entities.Boletim
         [StringLength(1)]
         public string FaltaOuAcrescimo { get; set; }
 
-
-        //Custom("Salário", "SalarioValido", "O Salário não atende os requisitos", ValidaSalario);
-
-        //private bool ValidaSalario(object[] values)
-        //{ //feito para operar com o Custom, pode mudar as regras fácil aqui de forma canônica
-        //    return ((!Errors.ContainsKey("IdadeInconsistente") && Value.Idade > 21 && Value.Salario > 1000M)) ||
-        //        (Value.Cargo != "Gerente" && Value.Salario > 900M) ||
-        //        (Value.Cargo == "Gerente" && Value.Salario > 1200M);
-        //}
-
         [Required]
         [StringLength(6)]
         public string Sequencial { get; set; }
+
+
+        public class RequireWhenCategoryAttribute : ValidationAttribute
+        {
+            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+            {
+                var attribute = (ConteinerItemIDFA)validationContext.ObjectInstance;
+                if (attribute.FaltaOuAcrescimo != "F")
+                {
+                    return ValidationResult.Success;
+                }
+                else
+                {
+                    var valorcampo = value as string;
+                    return string.IsNullOrEmpty(valorcampo) ? new ValidationResult("Value is required.") : ValidationResult.Success;
+                }
+
+            }
+        }
     }
 }

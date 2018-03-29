@@ -48,6 +48,9 @@ namespace IntegracaoPsP.Domain.Entities.Boletim
         public string QuantidadeRegistro212 { get; set; }
         [Required]
         [StringLength(6)]
+        public string QuantidadeRegistro213 { get; set; }
+        [Required]
+        [StringLength(6)]
         public string QuantidadeTotalRegistro { get; set; }
         [Required]
         [StringLength(6)]

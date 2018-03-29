@@ -55,5 +55,9 @@ namespace IntegracaoPsP.Domain.Entities.Boletim
         [Required]
         [StringLength(6)]
         public string Sequencial { get; set; }
+
+
+
+       
     }
 }

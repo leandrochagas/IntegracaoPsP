@@ -102,4 +102,7 @@ namespace IntegracaoPsP.Domain.Entities.Boletim
         public string Sequencial { get; set; }
 
     }
+
+
+
 }

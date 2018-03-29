@@ -518,7 +518,7 @@ namespace IntegracaoPsP.Service.Functions
 
             List<Data> lista = util.ReadTxt(caminho);
             List<LogMessage> listaLog = new List<LogMessage>();
-
+            #region Objetos Manifesto
             HeaderManifesto objHeader = new HeaderManifesto();
             Parceiro objParceiro = new Parceiro();
             Conteiner objConteiner = new Conteiner();
@@ -532,6 +532,25 @@ namespace IntegracaoPsP.Service.Functions
             MercadoriaConteinerizada objMercadoriaConteinerizada = new MercadoriaConteinerizada();
             BoletimDescricao objBoletimDescricao = new BoletimDescricao();
             Trailler objTrailler = new Trailler();
+            #endregion
+
+            #region Objetos Boletim
+
+            HeaderBoletim objHeaderBoletim = new HeaderBoletim();
+            TransferenciaBoletim objTransferenciaBoletim = new TransferenciaBoletim();
+            TransferenciaBoletim objCargaeDescargaBoletim = new TransferenciaBoletim();
+            CargaSoltaBoletim objCargaSoltaBoletim = new CargaSoltaBoletim();
+            ConteinerBoletim objConteinerBoletim = new ConteinerBoletim();
+            GranelBoletim objGranelBoletim = new GranelBoletim();
+            Paralisacoes objParalisacoes = new Paralisacoes();
+            ConteinerBoletimIDFA objConteinerBoletimIDFA = new ConteinerBoletimIDFA();
+            ConteinerItemIDFA objConteinerItemIDFA = new ConteinerItemIDFA();
+            CargaGeralIDFA objCargaGeralIDFA = new CargaGeralIDFA();
+            ItemCargaGeralIDFA objItemCargaGeralIDFA = new ItemCargaGeralIDFA();
+            GranelBoletimIDFA objGranelBoletimIDFA = new GranelBoletimIDFA();
+            GranelItemBoletimIDFA objGranelItemBoletimIDFA = new GranelItemBoletimIDFA();
+            TraillerBoletim objTraillerBoletim = new TraillerBoletim();
+            #endregion
             try
             {
 
@@ -977,6 +996,419 @@ namespace IntegracaoPsP.Service.Functions
 
                                 break;
                             }
+
+
+                        #region  Validação de arquivos de boltim
+
+                        case "201":
+                            {
+                                objHeaderBoletim = util.ValidateBoletimHeader(item);
+                                var contextHeaderBoletim = new ValidationContext(objHeaderBoletim, serviceProvider: null, items: null);
+                                #region Add Erros Header
+                                if (Validator.TryValidateObject(objHeader, contextHeaderBoletim, validationResults, true) == false)
+                                {
+                                    //erro de validação
+
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contextHeaderBoletim.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+                                        }
+                                       );
+                                    }
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    // db.HeadersManifesto.Add(objHeader);
+                                }
+                                #endregion
+                                break;
+                            }
+
+                            //Verificar 202 transferencias que n existe no documento
+                        case "203": //Boletim
+                            {
+                                objCargaeDescargaBoletim = util.ValidateCargaeDescargaBoletim(item);
+                                var contextCargaeDescarga = new ValidationContext(objCargaeDescargaBoletim, serviceProvider: null, items: null);
+                                #region Add Erros Carga e descarga
+                                if (Validator.TryValidateObject(objParceiro, contextCargaeDescarga, validationResults, true) == false)
+                                {
+                                    //erro de validação
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contextCargaeDescarga.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+                                        }
+                                       );
+                                    }
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    listaParceiro.Add(objParceiro);
+                                }
+                                #endregion
+                                break;
+                            }
+                        case "204":
+                            {
+                                objCargaSoltaBoletim = util.ValidateCargaSoltaBoletim(item);
+                                var contextCargaSoltaBoletim = new ValidationContext(objCargaSoltaBoletim, serviceProvider: null, items: null);
+                                #region Add Erros Carga Solta
+                                if (Validator.TryValidateObject(objCargaSoltaBoletim, contextCargaSoltaBoletim, validationResults, true) == false)
+                                {
+                                    //erro de validação
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contextCargaSoltaBoletim.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+                                        }
+                                       );
+                                    }
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    listaConteiner.Add(objConteiner);
+                                }
+                                #endregion
+                                break;
+                            }
+                        case "205":
+                            {
+                                objConteinerBoletim = util.ValidateConteinerBoletim(item);
+                                var contextConteinerBoletim = new ValidationContext(objConteinerBoletim, serviceProvider: null, items: null);
+                                #region Add Erros Conteiner Boletim
+                                if (Validator.TryValidateObject(objConteinerBoletim, contextConteinerBoletim, validationResults, true) == false)
+                                {
+                                    //erro de validação
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contextConteinerBoletim.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+                                        }
+                                       );
+                                    }
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    listaPortodeEscala.Add(objPortodeEscala);
+                                }
+                                #endregion
+                                break;
+                            }
+
+                      
+
+                        case "206":
+                            {
+                                objGranelBoletim = util.ValidateGranelBoletim(item);
+                                var contextobjGranelBoletim = new ValidationContext(objBoletim, serviceProvider: null, items: null);
+                                #region Add Erros Boletim
+                                if (Validator.TryValidateObject(objGranelBoletim, contextobjGranelBoletim, validationResults, true) == false)
+                                {
+                                    //erro de validação
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contextobjGranelBoletim.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+                                        }
+                                       );
+                                    }
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    listaBoletim.Add(objBoletim);
+                                }
+                                #endregion
+                                break;
+                            }
+
+                        case "207":
+                            {
+                                objParalisacoes = util.ValidateParalisacoesBoletim(item);
+                                var contexobjParalisacoes = new ValidationContext(objParalisacoes, serviceProvider: null, items: null);
+                                #region Add Erros Paralisacoes
+                                if (Validator.TryValidateObject(objParalisacoes, contexobjParalisacoes, validationResults, true) == false)
+                                {
+                                    //erro de Paralisacoes
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contexobjParalisacoes.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+                                        }
+                                       );
+                                    }
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    listaBoletimMaster.Add(objBoletimMaster);
+                                }
+                                #endregion
+                                break;
+                            }
+                        case "208":
+                            {
+                                objConteinerBoletimIDFA = util.ValidateConteinerBoletimIDFA(item);
+                                var contextConteinerBoletimIDFA = new ValidationContext(objConteinerBoletimIDFA, serviceProvider: null, items: null);
+                                #region Add Erros ConteinerBoletimIDFA
+                                if (Validator.TryValidateObject(objConteinerBoletimIDFA, contextConteinerBoletimIDFA, validationResults, true) == false)
+                                {
+                                    //erro de validação
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contextConteinerBoletimIDFA.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+                                        }
+                                       );
+                                    }
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    listaFrete.Add(objFrete);
+                                }
+                                #endregion
+                                break;
+                            }
+
+                       
+                        case "209":
+                            {
+                                objConteinerItemIDFA = util.ValidateItemConteinerBoletimIDFA(item);
+                                var contextConteinerItemIDFA = new ValidationContext(objConteinerItemIDFA, serviceProvider: null, items: null);
+                                #region Add Erros ConteinerItemIDFA
+                                if (Validator.TryValidateObject(objConteinerItemIDFA, contextConteinerItemIDFA, validationResults, true) == false)
+                                {
+                                    //erro de validação
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contextConteinerItemIDFA.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+                                        }
+                                       );
+                                    }
+
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    listaCargaSolta.Add(objCargaSolta);
+                                }
+                                #endregion
+                                break;
+                            }
+
+                        case "210":
+                            {
+                                objCargaGeralIDFA = util.ValidateCargaGeralIDFABoletim(item);
+                                var contextCargaGeralIDFA = new ValidationContext(objCargaGeralIDFA, serviceProvider: null, items: null);
+                                #region Add Erros Conteiner Cheio
+                                if (Validator.TryValidateObject(objCargaGeralIDFA, contextCargaGeralIDFA, validationResults, true) == false)
+                                {
+                                    //erro de validação
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contextCargaGeralIDFA.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+                                        }
+                                       );
+                                    }
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    listaConteinerCheio.Add(objConteinerCheio);
+                                }
+                                #endregion
+                                break;
+                            }
+
+                        case "211":
+                            {
+                                objItemCargaGeralIDFA = util.ValidateItemCargaGeralIDFABoletim(item);
+                                var contextItemCargaGeralIDFA = new ValidationContext(objItemCargaGeralIDFA, serviceProvider: null, items: null);
+                                #region Add Erros ItemCargaGeralIDFA
+                                if (Validator.TryValidateObject(objItemCargaGeralIDFA, contextItemCargaGeralIDFA, validationResults, true) == false)
+                                {
+                                    //erro de validação
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contextItemCargaGeralIDFA.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+                                        }
+                                       );
+                                    }
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    listaGranel.Add(objGranel);
+                                }
+                                #endregion
+                                break;
+                            }
+                        case "212":
+                            {
+                                objGranelBoletimIDFA = util.ValidateGranelBoletimIDFA(item);
+                                var contextGranelBoletimIDFA = new ValidationContext(objGranelBoletimIDFA, serviceProvider: null, items: null);
+                                #region Add Erros Mercadoria Conteinerizada
+                                if (Validator.TryValidateObject(objGranelBoletimIDFA, contextGranelBoletimIDFA, validationResults, true) == false)
+                                {
+                                    //erro de validação
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contextGranelBoletimIDFA.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+                                        }
+                                       );
+                                    }
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    listaMercadoriaConteinerizada.Add(objMercadoriaConteinerizada);
+                                }
+                                #endregion
+                                break;
+                            }
+
+                        case "213":
+                            {
+                                objGranelItemBoletimIDFA = util.ValidateGranelItemBoletimIDFA(item);
+                                var contextGranelItemBoletimIDFA = new ValidationContext(objGranelItemBoletimIDFA, serviceProvider: null, items: null);
+                                #region Add Erros GranelItemBoletimIDFA
+                                if (Validator.TryValidateObject(objGranelItemBoletimIDFA, contextGranelItemBoletimIDFA, validationResults, true) == false)
+                                {
+                                    //erro de validação
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contextGranelItemBoletimIDFA.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+                                        }
+                                       );
+                                    }
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    listaBoletimDescricao.Add(objBoletimDescricao);
+                                }
+                                #endregion
+                                break;
+                            }
+
+                        case "299":
+                            {
+                                objTraillerBoletim = util.ValidateTraillerBoletim(item, nomearquivo);
+                                var contextTraillerBoletim = new ValidationContext(objTraillerBoletim, serviceProvider: null, items: null);
+                                #region Add Erros Descrição Boletim
+                                if (Validator.TryValidateObject(objTraillerBoletim, contextTraillerBoletim, validationResults, true) == false)
+                                {
+                                    //erro de validação
+                                    foreach (var itemLog in validationResults)
+                                    {
+                                        listaLog.Add(new LogMessage
+                                        {
+                                            Linha = linha,
+                                            NomeEntidade = contextTraillerBoletim.DisplayName,
+                                            Message = itemLog.ErrorMessage.ToString(),
+                                            MessageSystem = itemLog.ErrorMessage.ToString(),
+                                            Data = DateTime.Now,
+                                            NomeArquivo = nomearquivo
+
+                                        }
+                                       );
+                                    }
+                                    validationResults.Clear();
+                                }
+                                else
+                                {
+                                    // db.Traillers.Add(objTrailler);
+                                }
+                                #endregion
+
+                                break;
+                            }
+                        #endregion
+
+
                         default:
                             break;
 
@@ -1487,7 +1919,7 @@ namespace IntegracaoPsP.Service.Functions
             return obj;
         }
 
-        public TransferenciaBoletim ValidateTransferenciaBoletim(Data linha) //Boletim Carga e Descarga 203
+        public TransferenciaBoletim ValidateCargaeDescargaBoletim(Data linha) //Boletim Carga e Descarga 203
         {
             TransferenciaBoletim obj = new TransferenciaBoletim();
             try
@@ -1696,6 +2128,211 @@ namespace IntegracaoPsP.Service.Functions
 
             return obj;
         }
+
+        public ConteinerBoletimIDFA ValidateConteinerBoletimIDFA(Data linha)
+        {
+            ConteinerBoletimIDFA obj = new ConteinerBoletimIDFA();
+            try
+            {
+                obj.Identificador = linha.StringData.Substring(0, 3).Trim();
+                obj.CNPJBase = linha.StringData.Substring(3, 8).Trim();
+                obj.CNPJFilial = linha.StringData.Substring(11, 4).Trim();
+                obj.CNPJControle = linha.StringData.Substring(15, 2).Trim();
+                obj.NumeroViagem = linha.StringData.Substring(17, 10).Trim();
+                obj.QteConteinerCheioDescarregado = linha.StringData.Substring(27, 5).Trim();
+                obj.QteConteinerCheioManifesto = linha.StringData.Substring(32, 5).Trim();
+                obj.QteConteinerCheioComManifestoDescarregado = linha.StringData.Substring(37, 5).Trim();
+                obj.QteConteinervazioDescarregado = linha.StringData.Substring(42, 5).Trim();
+                obj.QteConteinerCheioEmbarcado = linha.StringData.Substring(47, 5).Trim();
+                obj.QteConteinerCheioBalEmbarcado = linha.StringData.Substring(52, 6).Trim();
+                obj.QteConteinerCheiocPCIDescarregado = linha.StringData.Substring(58, 6).Trim();
+                obj.QteConteinerVazioEmbarcado = linha.StringData.Substring(64, 6).Trim();
+                obj.Sequencial = linha.StringData.Substring(70, 6).Trim();
+            }
+            catch
+            {
+                obj = new ConteinerBoletimIDFA();
+            }
+
+
+            return obj;
+        }
+
+        public ConteinerItemIDFA ValidateItemConteinerBoletimIDFA(Data linha)
+        {
+            ConteinerItemIDFA obj = new ConteinerItemIDFA();
+            try
+            {
+                obj.Identificador = linha.StringData.Substring(0, 3).Trim();
+                obj.CNPJBase = linha.StringData.Substring(3, 8).Trim();
+                obj.CNPJFilial = linha.StringData.Substring(11, 4).Trim();
+                obj.CNPJControle = linha.StringData.Substring(15, 2).Trim();
+                obj.NumeroViagem = linha.StringData.Substring(17, 10).Trim();
+                obj.NumeroBoletim = linha.StringData.Substring(27, 30).Trim();
+                obj.Portoemissao = linha.StringData.Substring(57, 5).Trim();
+                obj.Emitente = linha.StringData.Substring(62, 4).Trim();
+                obj.DataEmissao = linha.StringData.Substring(66, 8).Trim();
+                obj.PortoDestinoFinal = linha.StringData.Substring(74, 5).Trim();
+                obj.IdConteiner = linha.StringData.Substring(79, 11).Trim();
+                obj.FaltaOuAcrescimo = linha.StringData.Substring(90, 1).Trim();
+                obj.Sequencial = linha.StringData.Substring(91, 6).Trim();
+            }
+            catch
+            {
+                obj = new ConteinerItemIDFA();
+            }
+
+
+            return obj;
+        }
+
+        public CargaGeralIDFA ValidateCargaGeralIDFABoletim(Data linha)
+        {
+            CargaGeralIDFA obj = new CargaGeralIDFA();
+            try
+            {
+                obj.Identificador = linha.StringData.Substring(0, 3).Trim();
+                obj.CNPJBase = linha.StringData.Substring(3, 8).Trim();
+                obj.CNPJFilial = linha.StringData.Substring(11, 4).Trim();
+                obj.CNPJControle = linha.StringData.Substring(15, 2).Trim();
+                obj.NumeroViagem = linha.StringData.Substring(17, 10).Trim();
+                obj.QtdeDescarregada = linha.StringData.Substring(27, 10).Trim();
+                obj.PesoDescarregado = linha.StringData.Substring(37, 12).Trim();
+                obj.QtdeManifestada = linha.StringData.Substring(49, 10).Trim();
+                obj.PesoManifestado = linha.StringData.Substring(59, 12).Trim();
+                obj.QtdeDescarregadoComManifesto = linha.StringData.Substring(71, 10).Trim();
+                obj.PesoDescarregadoComManifesto = linha.StringData.Substring(89, 12).Trim();
+                obj.QtdeDescarregadoComPCI = linha.StringData.Substring(93, 10).Trim();
+                obj.PesoDescarregadoComPCI = linha.StringData.Substring(103, 12).Trim();
+                obj.QtdeEmbarcada = linha.StringData.Substring(115, 10).Trim();
+                obj.PesoEmbarcado = linha.StringData.Substring(125, 12).Trim();
+                obj.QtdeTotalEmbarcado = linha.StringData.Substring(137, 10).Trim();
+                obj.PesoTotalEmbarcado = linha.StringData.Substring(147, 12).Trim();
+                obj.Sequencial = linha.StringData.Substring(159, 6).Trim();
+            }
+            catch
+            {
+                obj = new CargaGeralIDFA();
+            }
+
+
+            return obj;
+        }
+
+        public ItemCargaGeralIDFA ValidateItemCargaGeralIDFABoletim(Data linha)
+        {
+            ItemCargaGeralIDFA obj = new ItemCargaGeralIDFA();
+            try
+            {
+                obj.Identificador = linha.StringData.Substring(0, 3).Trim();
+                obj.CNPJBase = linha.StringData.Substring(3, 8).Trim();
+                obj.CNPJFilial = linha.StringData.Substring(11, 4).Trim();
+                obj.CNPJControle = linha.StringData.Substring(15, 2).Trim();
+                obj.NumeroViagem = linha.StringData.Substring(17, 10).Trim();
+                obj.NumeroBoletim = linha.StringData.Substring(27, 30).Trim();
+                obj.PortoEmissao = linha.StringData.Substring(57, 5).Trim();
+                obj.Emitente = linha.StringData.Substring(62, 4).Trim();
+                obj.DataEmissao = linha.StringData.Substring(66, 8).Trim();
+                obj.PortodeDestinoFinal = linha.StringData.Substring(74, 5).Trim();
+                obj.Mercadoria = linha.StringData.Substring(79, 8).Trim();
+                obj.Quantidade = linha.StringData.Substring(87, 5).Trim();
+                obj.Peso = linha.StringData.Substring(91, 12).Trim();
+                obj.FaltaouAcrescimo = linha.StringData.Substring(104, 1).Trim();
+                obj.Sequencial = linha.StringData.Substring(105, 6).Trim();
+            }
+            catch
+            {
+                obj = new ItemCargaGeralIDFA();
+            }
+
+
+            return obj;
+        }
+
+        public GranelBoletimIDFA ValidateGranelBoletimIDFA(Data linha)
+        {
+            GranelBoletimIDFA obj = new GranelBoletimIDFA();
+            try
+            {
+                obj.Identificador = linha.StringData.Substring(0, 3).Trim();
+                obj.CNPJBase = linha.StringData.Substring(3, 8).Trim();
+                obj.CNPJFilial = linha.StringData.Substring(11, 4).Trim();
+                obj.CNPJControle = linha.StringData.Substring(15, 2).Trim();
+                obj.NumeroViagem = linha.StringData.Substring(17, 10).Trim();
+                obj.PesoDescarregado = linha.StringData.Substring(27, 12).Trim();
+                obj.PesoManifestado = linha.StringData.Substring(39, 12).Trim();
+                obj.PesoDescarregadoComManifesto = linha.StringData.Substring(51, 12).Trim();
+                obj.PesoDescarregadoComPCI = linha.StringData.Substring(63, 12).Trim();
+                obj.PesoEmbarcado = linha.StringData.Substring(75, 12).Trim();
+                obj.Sequencial = linha.StringData.Substring(105, 6).Trim();
+            }
+            catch
+            {
+                obj = new GranelBoletimIDFA();
+            }
+
+
+            return obj;
+        }
+
+        public GranelItemBoletimIDFA ValidateGranelItemBoletimIDFA(Data linha)
+        {
+            GranelItemBoletimIDFA obj = new GranelItemBoletimIDFA();
+            try
+            {
+                obj.Identificador = linha.StringData.Substring(0, 3).Trim();
+                obj.CNPJBase = linha.StringData.Substring(3, 8).Trim();
+                obj.CNPJFilial = linha.StringData.Substring(11, 4).Trim();
+                obj.CNPJControle = linha.StringData.Substring(15, 2).Trim();
+                obj.NumeroViagem = linha.StringData.Substring(17, 10).Trim();
+                obj.NumeroBoletim = linha.StringData.Substring(27, 30).Trim();
+                obj.PortoEmissao = linha.StringData.Substring(57, 5).Trim();
+                obj.Emitente = linha.StringData.Substring(62, 4).Trim();
+                obj.DataEmissao = linha.StringData.Substring(66, 8).Trim();
+                obj.Mercadoria = linha.StringData.Substring(79, 8).Trim();
+                obj.Peso = linha.StringData.Substring(87, 12).Trim();
+                obj.FaltaOuAcrescimo = linha.StringData.Substring(99, 1).Trim();
+                obj.Sequencial = linha.StringData.Substring(100, 6).Trim();
+            }
+            catch
+            {
+                obj = new GranelItemBoletimIDFA();
+            }
+
+
+            return obj;
+        }
+
+        public TraillerBoletim ValidateTraillerBoletim(Data linha, string sequencial)
+        {
+            TraillerBoletim obj = new TraillerBoletim();
+            try
+            {
+                obj.Identificador = linha.StringData.Substring(0, 3).Trim();
+                obj.QuantidadeRegistro202 = linha.StringData.Substring(3, 6).Trim();
+                obj.QuantidadeRegistro203 = linha.StringData.Substring(9, 6).Trim();
+                obj.QuantidadeRegistro204 = linha.StringData.Substring(15, 6).Trim();
+                obj.QuantidadeRegistro205 = linha.StringData.Substring(21, 6).Trim();
+                obj.QuantidadeRegistro206 = linha.StringData.Substring(27, 6).Trim();
+                obj.QuantidadeRegistro207 = linha.StringData.Substring(33, 6).Trim();
+                obj.QuantidadeRegistro208 = linha.StringData.Substring(39, 6).Trim();
+                obj.QuantidadeRegistro209 = linha.StringData.Substring(45, 6).Trim();
+                obj.QuantidadeRegistro210 = linha.StringData.Substring(51, 6).Trim();
+                obj.QuantidadeRegistro211 = linha.StringData.Substring(57, 6).Trim();
+                obj.QuantidadeRegistro212 = linha.StringData.Substring(63, 6).Trim();
+                obj.QuantidadeRegistro213 = linha.StringData.Substring(69, 6).Trim();
+                obj.QuantidadeTotalRegistro = linha.StringData.Substring(75, 6).Trim();
+                obj.Sequencial = sequencial.Substring(7, 6).Replace(".txt", "");
+
+            }
+            catch
+            {
+                obj = new TraillerBoletim();
+            }
+
+
+            return obj;
+        }
         #endregion
 
 
@@ -1882,14 +2519,6 @@ namespace IntegracaoPsP.Service.Functions
                                 util.InsereIntegracaoXML(nomeArquivosTratado, xmlString, nomeArquivo);
                             }
                         }
-                        //else
-                        //{
-                        //    if (db.Integracoes.Where(x => x.DtProcessamento != null && x.NomeArquivo == arquivo.Name).Count() > 0)
-                        //    {
-                        //        util.InsereLog(0, nomeArquivosTratado, arquivo.Name, "ERR_01: Arquivo processado anteriormente", "Arquivo processado anteriormente, favor verificar!");
-                        //        return "ERR_01: Arquivo processado anteriormente";
-                        //    }
-                        //}
                     }
                 }
                 if (arquivo.Extension == ".txt")
@@ -1901,8 +2530,11 @@ namespace IntegracaoPsP.Service.Functions
                     Utils util = new Utils();
                     if (db.Integracoes.Where(x => x.NomeArquivo == nomeArquivo && x.DtProcessamento != null).Count() <= 0)
                     {
+                        if (nomeArquivo.Substring(0,5)=="ARCBOL")
+                            lista = util.ValidadorManifesto(caminhoBusca, nomeArquivo);
+                        else
+                            lista = util.ValidadorManifesto(caminhoBusca, nomeArquivo);
 
-                        lista = util.ValidadorManifesto(caminhoBusca, nomeArquivo);
                         if (lista.Select(x => x.Message != "").FirstOrDefault())
                         {
                             qtdeArquivosinvalidostxt = qtdeArquivosinvalidostxt + 1;

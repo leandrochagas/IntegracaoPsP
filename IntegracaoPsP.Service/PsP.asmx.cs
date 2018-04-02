@@ -1,19 +1,12 @@
-﻿using IntegracaoPsP.Domain.Entities;
-using IntegracaoPsP.Domain.Entities.Log;
-using IntegracaoPsP.Domain.Entities.Manifesto;
-using IntegracaoPsP.Domain.Entities.Others;
-using IntegracaoPsP.Domain.Entities.Validacao;
-using IntegracaoPsP.Domain.Entities.Xml;
+﻿using IntegracaoPsP.Domain.Entities.Xml;
 using IntegracaoPsP.Service.Functions;
 using IntegracaoPsP.Web.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Web.Services;
 using System.Xml;
-using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace IntegracaoPsP.Service
@@ -28,10 +21,10 @@ namespace IntegracaoPsP.Service
     public class PsP : WebService
     {
         #region Constantes de endereços de busca de arquivos
-        string CaminhoBusca = System.Configuration.ConfigurationManager.AppSettings["BuscaArquivos"];
-        string CaminhoValido = System.Configuration.ConfigurationManager.AppSettings["ArquivosValidos"];
-        string CaminhoErro = System.Configuration.ConfigurationManager.AppSettings["ArquivosInvalidos"];
-        string modeloXsd = System.Configuration.ConfigurationManager.AppSettings["Modelosxsd"]; 
+        //string CaminhoBusca = System.Configuration.ConfigurationManager.AppSettings["BuscaArquivos"];
+        //string CaminhoValido = System.Configuration.ConfigurationManager.AppSettings["ArquivosValidos"];
+        //string CaminhoErro = System.Configuration.ConfigurationManager.AppSettings["ArquivosInvalidos"];
+        //string modeloXsd = System.Configuration.ConfigurationManager.AppSettings["Modelosxsd"]; 
         #endregion
 
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -50,6 +43,9 @@ namespace IntegracaoPsP.Service
                 return  "NOK";
             }
         }
+
+
+
 
         [WebMethod(Description = @"Método responsável processar um arquivo de fomra individual")]
         public string BuscarArquivosIndividual(string caminho)

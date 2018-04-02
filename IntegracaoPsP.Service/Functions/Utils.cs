@@ -14,6 +14,9 @@ using System.Linq;
 using IntegracaoPsP.Web.Models;
 using IntegracaoPsP.Domain.Entities.Validacao;
 using IntegracaoPsP.Domain.Entities.Boletim;
+using System.Xml.Schema;
+using System.Xml;
+using System.Text.RegularExpressions;
 
 namespace IntegracaoPsP.Service.Functions
 {
@@ -22,12 +25,7 @@ namespace IntegracaoPsP.Service.Functions
     public class Utils
     {
 
-        #region Constantes de endereços de busca de arquivos
-        string CaminhoBusca = ConfigurationManager.AppSettings["BuscaArquivos"];
-        string CaminhoValido = ConfigurationManager.AppSettings["ArquivosValidos"];
-        string CaminhoErro = ConfigurationManager.AppSettings["ArquivosInvalidos"];
-        string modeloXsd = ConfigurationManager.AppSettings["Modelosxsd"];
-        #endregion
+    
 
         public SqlConnection ConexaoDb()
         {
@@ -38,6 +36,14 @@ namespace IntegracaoPsP.Service.Functions
         }
 
         private ApplicationDbContext db = new ApplicationDbContext();
+
+        #region Constantes de endereços de busca de arquivos
+        
+        //string CaminhoBusca = ConfigurationManager.AppSettings["BuscaArquivos"];
+        //string CaminhoValido = ConfigurationManager.AppSettings["ArquivosValidos"];
+        //string CaminhoErro = ConfigurationManager.AppSettings["ArquivosInvalidos"];
+        //string modeloXsd = ConfigurationManager.AppSettings["Modelosxsd"];
+        #endregion
         enum DocumentsManifest
         {
             Header = 101,
@@ -2435,6 +2441,12 @@ namespace IntegracaoPsP.Service.Functions
         public string VarrerDiretorio(string caminhoIndividual)
         {
             //string tokenTransaction = MD5Hash.CalculaHash(DateTime.Now.ToString("yyyyMMddhmmtt"));
+
+            string CaminhoBusca     = db.Parametros.Where(x => x.Nome == "BuscaArquivos").Select(x => x.Valor).FirstOrDefault(); //ConfigurationManager.AppSettings["BuscaArquivos"];
+            string CaminhoValido    = db.Parametros.Where(x => x.Nome == "ArquivosValidos").Select(x => x.Valor).FirstOrDefault(); 
+            string CaminhoErro      = db.Parametros.Where(x => x.Nome == "ArquivosInvalidos").Select(x => x.Valor).FirstOrDefault(); 
+            string modeloXsd        = db.Parametros.Where(x => x.Nome == "Modelosxsd").Select(x => x.Valor).FirstOrDefault();  //ConfigurationManager.AppSettings["Modelosxsd"];
+
             List<LogMessage> lista = new List<LogMessage>();
             int qtdeArquivosvalidosXml = 0, qtdeArquivosvalidostxt = 0;
             int qtdeArquivosinvalidosXml = 0, qtdeArquivosinvalidostxt = 0;
@@ -2451,22 +2463,43 @@ namespace IntegracaoPsP.Service.Functions
 
             if (string.IsNullOrEmpty(caminhoIndividual))
             {
-                arquivos = new DirectoryInfo(CaminhoBusca).EnumerateFiles("*.*", SearchOption.AllDirectories).Where(x => x.Extension == ".txt" || x.Extension == ".xml");
+                arquivos = new DirectoryInfo(CaminhoBusca).EnumerateFiles("*.*", SearchOption.AllDirectories).Where(x => x.Extension == ".txt" || x.Extension == ".xml" );
             }
             else
             {
                 arquivos = new DirectoryInfo(CaminhoBusca).EnumerateFiles("*.*", SearchOption.AllDirectories).Where(x => x.FullName == caminhoIndividual);
             }
-           // var arquivos = string.IsNullOrEmpty(caminhoIndividual)? new DirectoryInfo(CaminhoBusca).EnumerateFiles("*.*", SearchOption.AllDirectories).Where(x => x.Extension == ".txt" || x.Extension == ".xml") : "";
-          //  var arquivos = new DirectoryInfo(CaminhoBusca).EnumerateFiles("*.*", SearchOption.AllDirectories).Where(x => x.Extension == ".txt" || x.Extension == ".xml");
+         
             foreach (var arquivo in arquivos)
             {
+               // ValidacaoXML validadorXML = new ValidacaoXML();
+               /// lista = validadorXML.ValidarXml(arquivo.FullName, @"C:\Projetos\Docas\Modelos XSD\DE.xsd");
+
                 if (arquivo.Extension == ".xml")
                 {
-
                     ValidacaoXML validadorXML = new ValidacaoXML();
-                    string nomeArquivosTratado = arquivo.Name.Substring(17, arquivo.Name.Length - 17).Substring(0, arquivo.Name.Substring(17, arquivo.Name.Length - 17).IndexOf("_"));
-                    lista = validadorXML.ValidarXml(arquivo.FullName, modeloXsd + nomeArquivosTratado + ".xsd");
+                    string[] arrayversaoArquivosTratado = Regex.Split(arquivo.Name, "_");
+                    //Arquivo xml
+                    // string nomeArquivosTratado = arquivo.Name.Substring(17, arquivo.Name.Length - 17).Substring(0, arquivo.Name.Substring(17, arquivo.Name.Length - 17).IndexOf("_"));
+                    string nomeArquivosTratado = arrayversaoArquivosTratado[arrayversaoArquivosTratado.Count() - 2].ToString();
+                    string versaoArquivosTratado= arrayversaoArquivosTratado[arrayversaoArquivosTratado.Count()-1].ToString().Replace(".xml","");
+
+                    string versaoArquivosxsd = nomeArquivosTratado + "_" + versaoArquivosTratado;
+                    string modeloArquivoXsd = string.Empty;
+                    if (db.ModelosXsd.Where(x => x.NomeArquivo == nomeArquivosTratado && x.Versao ==versaoArquivosTratado).Count() > 0)
+                    {
+                        modeloArquivoXsd = db.ModelosXsd.Where(x => x.NomeArquivo == nomeArquivosTratado && x.Versao == versaoArquivosTratado).Select(x => x.Modelo).FirstOrDefault();
+                        lista = validadorXML.ValidarXml(arquivo.FullName, modeloArquivoXsd);
+                    }
+                    else
+                    {
+                        //Tratamento para o caso de não possui modelo no repositorio
+                    }
+                    
+
+                   // lista = validadorXML.ValidarXml(arquivo.FullName, modeloXsd + nomeArquivosTratado + ".xsd");
+
+                   // lista = validadorXML.ValidarXml(arquivo.FullName, modeloXsd + nomeArquivosTratado + ".xsd");
 
                     if (lista.Where(x => x.NomeEntidade != "").Count() > 0)
                     {
@@ -2583,6 +2616,7 @@ namespace IntegracaoPsP.Service.Functions
                                 );
 
         }
+
 
     }
 }

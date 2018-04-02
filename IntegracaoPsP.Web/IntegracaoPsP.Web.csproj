@@ -173,6 +173,8 @@
     <Compile Include="Controllers\IntegrationsController.cs" />
     <Compile Include="Controllers\LogMessagesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\ModelosXsdController.cs" />
+    <Compile Include="Controllers\ParametrosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -195,6 +197,10 @@
     <Compile Include="Migrations\201803271848574_addnewatributeIntegration.cs" />
     <Compile Include="Migrations\201803271848574_addnewatributeIntegration.Designer.cs">
       <DependentUpon>201803271848574_addnewatributeIntegration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804021642429_novaEntidadeParametroeModeloXsd.cs" />
+    <Compile Include="Migrations\201804021642429_novaEntidadeParametroeModeloXsd.Designer.cs">
+      <DependentUpon>201804021642429_novaEntidadeParametroeModeloXsd.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -346,6 +352,16 @@
     <Content Include="Template\vendor\jquery\jquery.min.map" />
     <Content Include="Template\vendor\jquery\jquery.slim.min.map" />
     <Content Include="Views\Shared\_Layout - Copy.cshtml" />
+    <Content Include="Views\Parametros\Create.cshtml" />
+    <Content Include="Views\Parametros\Delete.cshtml" />
+    <Content Include="Views\Parametros\Details.cshtml" />
+    <Content Include="Views\Parametros\Edit.cshtml" />
+    <Content Include="Views\Parametros\Index.cshtml" />
+    <Content Include="Views\ModelosXsd\Create.cshtml" />
+    <Content Include="Views\ModelosXsd\Delete.cshtml" />
+    <Content Include="Views\ModelosXsd\Details.cshtml" />
+    <Content Include="Views\ModelosXsd\Edit.cshtml" />
+    <Content Include="Views\ModelosXsd\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -379,6 +395,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803271848574_addnewatributeIntegration.resx">
       <DependentUpon>201803271848574_addnewatributeIntegration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804021642429_novaEntidadeParametroeModeloXsd.resx">
+      <DependentUpon>201804021642429_novaEntidadeParametroeModeloXsd.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

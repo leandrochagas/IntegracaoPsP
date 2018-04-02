@@ -64,7 +64,10 @@ namespace IntegracaoPsP.Web.Models
 
         public DbSet<Domain.Entities.Log.LogMessage> LogMensagens { get; set; }
 
-
+        #region entidades de Paramatrizacao e XSD
+        public DbSet<Domain.Entities.Others.Parametro> Parametros { get; set; }
+        public DbSet<Domain.Entities.Others.ModeloXsd> ModelosXsd { get; set; }
+        #endregion
 
         #region Entidades para tratamento de arquivos txts
         //public DbSet<Domain.Entities.Manifesto.HeaderManifesto> HeadersManifesto { get; set; }
